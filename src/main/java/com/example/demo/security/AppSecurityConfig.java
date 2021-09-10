@@ -41,9 +41,18 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     protected UserDetailsService userDetailsService() {
         UserDetails lindaSmith= User.builder()
-                .username("lindaSmith").password(passwordEncoder.encode("password")).roles(ApplicationUserRole.ADMIN.name()).build();
-       UserDetails anaFurtula=User.builder().username("anaFurtula").password(passwordEncoder.encode("password123")).roles(ApplicationUserRole.STUDENT.name()).build();
-        UserDetails tomForks=User.builder().username("tomForks").password(passwordEncoder.encode("password")).roles(ApplicationUserRole.ADMINTRAINEE.name()).build();
+                .username("lindaSmith").password(passwordEncoder.encode("password"))
+             //   .roles(ApplicationUserRole.ADMIN.name())
+                .authorities(ApplicationUserRole.ADMIN.getAuthorities())
+                .build();
+       UserDetails anaFurtula=User.builder().username("anaFurtula").password(passwordEncoder.encode("password123"))
+             //  .roles(ApplicationUserRole.STUDENT.name())
+               .authorities(ApplicationUserRole.STUDENT.getAuthorities())
+               .build();
+        UserDetails tomForks=User.builder().username("tomForks").password(passwordEncoder.encode("password")).
+        //   roles(ApplicationUserRole.ADMINTRAINEE.name())
+                  authorities(ApplicationUserRole.ADMINTRAINEE.getAuthorities())
+              .  build();
 
         return new InMemoryUserDetailsManager(
                 lindaSmith,
