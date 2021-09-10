@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/")
 public class AppController {
     private final List<Student> STUDENTS= Arrays.asList(
             new Student(1, "James Bond"),
@@ -18,7 +18,7 @@ public class AppController {
             new Student(3, "Alissa Smith")
 
     );
-    @GetMapping("/students/{id}")
+    @GetMapping("admin/students/{id}")
     private Student getStudent(@PathVariable("id") Integer studentId){
         return STUDENTS.stream().filter(student -> studentId.equals(student.getId()))
                 .findFirst().
@@ -26,5 +26,10 @@ public class AppController {
 
 
     }
+    @GetMapping("/public")
+    private String helloWorld(){
+        return "Hello, Student!";
+    }
+
 
 }
