@@ -38,8 +38,10 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         .and()
                 .formLogin()
        .loginPage("/login").permitAll()
-        .defaultSuccessUrl("/succesfullLogin", true);
-        //true is to force redirecting
+        .defaultSuccessUrl("/succesfullLogin", true) //true is to force redirecting
+        .and()
+        .rememberMe(); // default is 2 weeks
+
     }
 
     @Override
