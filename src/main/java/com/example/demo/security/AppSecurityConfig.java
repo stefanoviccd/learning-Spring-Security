@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -40,24 +42,24 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     @Bean
     protected UserDetailsService userDetailsService() {
-        UserDetails lindaSmith= User.builder()
-                .username("lindaSmith").password(passwordEncoder.encode("password"))
+        UserDetails admin= User.builder()
+                .username("admin").password(passwordEncoder.encode("password"))
              //   .roles(ApplicationUserRole.ADMIN.name())
                 .authorities(ApplicationUserRole.ADMIN.getAuthorities())
                 .build();
-       UserDetails anaFurtula=User.builder().username("anaFurtula").password(passwordEncoder.encode("password123"))
+       UserDetails student=User.builder().username("student").password(passwordEncoder.encode("password"))
              //  .roles(ApplicationUserRole.STUDENT.name())
                .authorities(ApplicationUserRole.STUDENT.getAuthorities())
                .build();
-        UserDetails tomForks=User.builder().username("tomForks").password(passwordEncoder.encode("password")).
+        UserDetails adminTrainee=User.builder().username("adminTrainee").password(passwordEncoder.encode("password")).
         //   roles(ApplicationUserRole.ADMINTRAINEE.name())
                   authorities(ApplicationUserRole.ADMINTRAINEE.getAuthorities())
               .  build();
 
         return new InMemoryUserDetailsManager(
-                lindaSmith,
-                anaFurtula,
-                tomForks
+                admin,
+                student,
+                adminTrainee
         );
     }
 }
