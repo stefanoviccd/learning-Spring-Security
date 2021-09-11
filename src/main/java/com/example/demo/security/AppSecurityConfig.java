@@ -33,7 +33,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").hasRole(ApplicationUserRole.ADMIN.name())
                 .anyRequest().authenticated()
         .and()
-                .formLogin();
+                .formLogin()
+       .loginPage("/login").permitAll();
     }
 
     @Override
