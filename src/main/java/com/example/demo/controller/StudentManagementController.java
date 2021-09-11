@@ -1,11 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.Student;
-import org.checkerframework.framework.qual.PolyAll;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,7 +17,7 @@ public  class StudentManagementController {
 
 
 @GetMapping
-@PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_ADMIN', 'ROLE_ADMINTRAINEE')")
+@PreAuthorize("hasAnyAuthority('ROLE_STUDENT', 'ROLE_ADMIN', 'ROLE_ADMINTRAINEE')")
     public List<Student> getAllStudents(){
     System.out.println("getAllStudents");
     System.out.println(STUDENTS);
@@ -27,7 +25,7 @@ public  class StudentManagementController {
 
     }
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAuthority('student:write')")
     public void registerNewStudent(@RequestBody Student student){
         System.out.println("registerNewStudent");
         System.out.println(student);
