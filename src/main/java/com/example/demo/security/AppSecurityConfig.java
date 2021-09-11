@@ -32,7 +32,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 //we can have a http method as the first parameter in antMatchers
                 .antMatchers("/admin/**").hasRole(ApplicationUserRole.ADMIN.name())
                 .anyRequest().authenticated()
-        .and().httpBasic();
+        .and()
+                .formLogin();
     }
 
     @Override
