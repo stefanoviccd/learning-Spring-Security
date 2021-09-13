@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -42,8 +43,17 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
         .defaultSuccessUrl("/succesfullLogin", true) //true is to force redirecting
         .and()
         .rememberMe().tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21))
-    .key("somethingverysecured"); // default is 2 weeks
+    .key("somethingverysecured") // default is 2 weeks
         //tokenRepository - if we using real database
+        .and()
+                .logout()
+                .logoutUrl("/logout")
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
+                //delete above line if we have crsf enabled. (see the documentation)
+                .clearAuthentication(true)
+                .deleteCookies("remember-me", "JSESSIONID")
+                .invalidateHttpSession(true)
+                .logoutSuccessUrl("/login");
 
     }
 
