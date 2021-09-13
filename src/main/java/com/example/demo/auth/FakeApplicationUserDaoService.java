@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 @Repository("fake")
-public class ApplicationUserDaoService implements ApplicationUserDao{
+public class FakeApplicationUserDaoService implements ApplicationUserDao{
     private PasswordEncoder passwordEncoder;
 
-    public ApplicationUserDaoService(PasswordEncoder passwordEncoder) {
+    public FakeApplicationUserDaoService(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
     }
 
