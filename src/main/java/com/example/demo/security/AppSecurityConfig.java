@@ -18,6 +18,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +41,9 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
        .loginPage("/login").permitAll()
         .defaultSuccessUrl("/succesfullLogin", true) //true is to force redirecting
         .and()
-        .rememberMe(); // default is 2 weeks
+        .rememberMe().tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(21))
+    .key("somethingverysecured"); // default is 2 weeks
+        //tokenRepository - if we using real database
 
     }
 
