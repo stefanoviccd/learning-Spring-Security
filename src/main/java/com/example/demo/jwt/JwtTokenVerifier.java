@@ -21,22 +21,27 @@ import java.util.stream.Collectors;
 
 public class JwtTokenVerifier extends OncePerRequestFilter {
 
+    private final  JwtConfig jwtConfig;
+
+    public JwtTokenVerifier(JwtConfig jwtConfig) {
+        this.jwtConfig = jwtConfig;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         //get the token from the header
-        String authorizationHeader=request.getHeader("Authorization");
-        if(Strings.isNullOrEmpty(authorizationHeader) || !(authorizationHeader.startsWith("Bearer ")))
+        String authorizationHeader=request.getHeader(jwtConfig.getAuthprizationHeader());
+        if(Strings.isNullOrEmpty(authorizationHeader) || !(authorizationHeader.startsWith(jwtConfig.getPrefix())))
         {
             //reject the request
             filterChain.doFilter(request, response);
             return;
         }
         try {
-            String key="Jgt4Aq0097bfllgy6pmjjvye20H6Jgt4Aq0097bfllgy6pmjjvye20H6";
-            String token=authorizationHeader.replace("Bearer ", "");
+            String token=authorizationHeader.replace(jwtConfig.getPrefix(), "");
             Jwt<JwsHeader, Claims> claimsJwt=Jwts.parser()
                     .setSigningKey(
-                            Keys.hmacShaKeyFor(key.getBytes()))
+                            jwtConfig.getTheSecretKey())
                     .parseClaimsJws(token);
             Claims body=(Claims) claimsJwt.getBody();
             String username=body.getSubject();
@@ -55,5 +60,6 @@ public class JwtTokenVerifier extends OncePerRequestFilter {
         catch (JwtException e){
             throw new IllegalStateException("Token can not be trusted.");
         }
+        filterChain.doFilter(request, response);
     }
 }

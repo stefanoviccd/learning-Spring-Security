@@ -2,7 +2,6 @@ package com.example.demo.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,9 +18,11 @@ import java.time.LocalDate;
 
 public class JwtUUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final JwtConfig jwtConfig;
 
-    public JwtUUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public JwtUUsernameAndPasswordAuthenticationFilter(AuthenticationManager authenticationManager, JwtConfig jwtConfig) {
         this.authenticationManager = authenticationManager;
+        this.jwtConfig = jwtConfig;
     }
 
 
@@ -48,13 +49,13 @@ public class JwtUUsernameAndPasswordAuthenticationFilter extends UsernamePasswor
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         // we need to generate the token
         //needs to be strong enough and really secure
-        String key = "Jgt4Aq0097bfllgy6pmjjvye20H6Jgt4Aq0097bfllgy6pmjjvye20H6";
+
         String token = Jwts.builder()
                 .setSubject(authResult.getName())
                 .claim("authorities", authResult.getAuthorities())
-                .setExpiration(Date.valueOf(LocalDate.now().plusWeeks(2))).signWith(Keys.hmacShaKeyFor(key.getBytes()))
+                .setExpiration(Date.valueOf(LocalDate.now().plusWeeks(2))).signWith(jwtConfig.getTheSecretKey())
                 .compact();
         //send the token to the client by adding it to the response header
-        response.addHeader("Authorisation", "Bearer "+token);
+        response.addHeader(jwtConfig.getAuthprizationHeader(), jwtConfig.getPrefix()+token);
     }
 }

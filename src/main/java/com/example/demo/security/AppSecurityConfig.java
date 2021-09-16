@@ -1,6 +1,7 @@
 package com.example.demo.security;
 
 import com.example.demo.auth.ApplicationUserService;
+import com.example.demo.jwt.JwtConfig;
 import com.example.demo.jwt.JwtTokenVerifier;
 import com.example.demo.jwt.JwtUUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
-import java.util.concurrent.TimeUnit;
 
 @Configuration
 @EnableWebSecurity
@@ -26,9 +24,11 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private PasswordEncoder passwordEncoder;
     private final ApplicationUserService applicationUserService;
+    private final JwtConfig jwtConfig;
 
-    public AppSecurityConfig(ApplicationUserService applicationUserService) {
+    public AppSecurityConfig(ApplicationUserService applicationUserService, JwtConfig jwtConfig) {
         this.applicationUserService = applicationUserService;
+        this.jwtConfig = jwtConfig;
     }
 
     @Override
@@ -37,8 +37,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
                 csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //we say that jwt is stateless, so with this the session won't be stored in the database
                 .and()
-                .addFilter(new JwtUUsernameAndPasswordAuthenticationFilter(authenticationManager())) //we have access to this authenticationManager because we extends this Adapter
-                .addFilterAfter(new JwtTokenVerifier(),JwtUUsernameAndPasswordAuthenticationFilter.class )
+                .addFilter(new JwtUUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig )) //we have access to this authenticationManager because we extends this Adapter
+                .addFilterAfter(new JwtTokenVerifier(jwtConfig),JwtUUsernameAndPasswordAuthenticationFilter.class )
                 .authorizeRequests()
                 //we can have a http method as the first parameter in antMatchers
                 .antMatchers("/admin/**").hasRole(ApplicationUserRole.ADMIN.name())
