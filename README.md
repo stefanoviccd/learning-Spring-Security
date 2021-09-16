@@ -1,2 +1,2 @@
 # learning-Spring-Security
-##This repository is about learning git and spring security at the same time.
+## This repository is about learning git and spring security at the same time.
