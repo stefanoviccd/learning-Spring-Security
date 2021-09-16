@@ -1,6 +1,8 @@
 package com.example.demo.security;
 
 import com.example.demo.auth.ApplicationUserService;
+import com.example.demo.jwt.JwtTokenVerifier;
+import com.example.demo.jwt.JwtUUsernameAndPasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -32,31 +35,15 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.
                 csrf().disable()
-                .
-                        authorizeRequests()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //we say that jwt is stateless, so with this the session won't be stored in the database
+                .and()
+                .addFilter(new JwtUUsernameAndPasswordAuthenticationFilter(authenticationManager())) //we have access to this authenticationManager because we extends this Adapter
+                .addFilterAfter(new JwtTokenVerifier(),JwtUUsernameAndPasswordAuthenticationFilter.class )
+                .authorizeRequests()
                 //we can have a http method as the first parameter in antMatchers
                 .antMatchers("/admin/**").hasRole(ApplicationUserRole.ADMIN.name())
-                .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                //.usernameParameter, passwordParameter
-                .loginPage("/login").permitAll()
-                .defaultSuccessUrl("/succesfullLogin", true) //true is to force redirecting
-                .and()
-                .rememberMe()
-                //rememberMeParameter()
-                .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
-                .key("somethingverysecured") // default is 2 weeks
-                //tokenRepository - if we using real database
-                .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
-                //delete above line if we have crsf enabled. (see the documentation)
-                .clearAuthentication(true)
-                .deleteCookies("remember-me", "JSESSIONID")
-                .invalidateHttpSession(true)
-                .logoutSuccessUrl("/login");
+                .anyRequest().authenticated();
+
 
     }
 
