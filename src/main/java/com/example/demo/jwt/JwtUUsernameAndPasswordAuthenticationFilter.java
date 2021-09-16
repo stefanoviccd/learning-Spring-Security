@@ -53,7 +53,7 @@ public class JwtUUsernameAndPasswordAuthenticationFilter extends UsernamePasswor
         String token = Jwts.builder()
                 .setSubject(authResult.getName())
                 .claim("authorities", authResult.getAuthorities())
-                .setExpiration(Date.valueOf(LocalDate.now().plusWeeks(2))).signWith(jwtConfig.getTheSecretKey())
+                .setExpiration(Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays()))).signWith(jwtConfig.getTheSecretKey())
                 .compact();
         //send the token to the client by adding it to the response header
         response.addHeader(jwtConfig.getAuthprizationHeader(), jwtConfig.getPrefix()+token);
